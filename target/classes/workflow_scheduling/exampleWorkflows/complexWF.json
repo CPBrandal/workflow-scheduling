@@ -1,0 +1,105 @@
+{
+    "directed": true,
+    "graph": {
+      "name": "ComplexDataProcessing"
+    },
+    "nodes": [
+      {
+        "id": "DataInput",
+        "execution_time": 5
+      },
+      {
+        "id": "PreProcess",
+        "execution_time": 10
+      },
+      {
+        "id": "FeatureExtraction",
+        "execution_time": 15
+      },
+      {
+        "id": "ModelTraining",
+        "execution_time": 30
+      },
+      {
+        "id": "DataValidation",
+        "execution_time": 12
+      },
+      {
+        "id": "ParallelProcess1",
+        "execution_time": 20
+      },
+      {
+        "id": "ParallelProcess2",
+        "execution_time": 18
+      },
+      {
+        "id": "Merge",
+        "execution_time": 8
+      },
+      {
+        "id": "FinalAnalysis",
+        "execution_time": 25
+      },
+      {
+        "id": "OutputPrep",
+        "execution_time": 10
+      }
+    ],
+    "links": [
+      {
+        "source": "DataInput",
+        "target": "PreProcess",
+        "data_amount": 1000
+      },
+      {
+        "source": "PreProcess",
+        "target": "FeatureExtraction",
+        "data_amount": 800
+      },
+      {
+        "source": "PreProcess",
+        "target": "DataValidation",
+        "data_amount": 800
+      },
+      {
+        "source": "FeatureExtraction",
+        "target": "ModelTraining",
+        "data_amount": 500
+      },
+      {
+        "source": "FeatureExtraction",
+        "target": "ParallelProcess1",
+        "data_amount": 300
+      },
+      {
+        "source": "DataValidation",
+        "target": "ParallelProcess2",
+        "data_amount": 400
+      },
+      {
+        "source": "ModelTraining",
+        "target": "Merge",
+        "data_amount": 200
+      },
+      {
+        "source": "ParallelProcess1",
+        "target": "Merge",
+        "data_amount": 150
+      },
+      {
+        "source": "ParallelProcess2",
+        "target": "Merge",
+        "data_amount": 180
+      },
+      {
+        "source": "Merge",
+        "target": "FinalAnalysis",
+        "data_amount": 450
+      },
+      {
+        "source": "FinalAnalysis",
+        "target": "OutputPrep",
+        "data_amount": 300
+      }
+    ]
+  }

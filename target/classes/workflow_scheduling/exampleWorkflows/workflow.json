@@ -1,0 +1,32 @@
+{
+    "directed": true,
+    "graph": {
+      "name": "Workflow"
+    },
+    "nodes": [
+      {
+        "id": "A",
+        "execution_time": 10
+      },
+      {
+        "id": "B",
+        "execution_time": 15
+      },
+      {
+        "id": "C",
+        "execution_time": 20
+      }
+    ],
+    "links": [
+      {
+        "source": "A",
+        "target": "B",
+        "data_amount": 100
+      },
+      {
+        "source": "B",
+        "target": "C",
+        "data_amount": 200
+      }
+    ]
+  }
