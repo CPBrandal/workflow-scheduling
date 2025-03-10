@@ -1,0 +1,275 @@
+{
+    "directed": true,
+    "graph": {
+      "name": "AdvancedAnalyticsPipeline"
+    },
+    "nodes": [
+      {
+        "id": "RawDataIngestion",
+        "execution_time": 8
+      },
+      {
+        "id": "DataCleansing",
+        "execution_time": 12
+      },
+      {
+        "id": "DataNormalization",
+        "execution_time": 6
+      },
+      {
+        "id": "FeatureEngineering",
+        "execution_time": 18
+      },
+      {
+        "id": "PrimaryValidation",
+        "execution_time": 10
+      },
+      {
+        "id": "SecondaryValidation",
+        "execution_time": 14
+      },
+      {
+        "id": "AnomalyDetection",
+        "execution_time": 20
+      },
+      {
+        "id": "ClusterAnalysis",
+        "execution_time": 22
+      },
+      {
+        "id": "DimensionalityReduction",
+        "execution_time": 16
+      },
+      {
+        "id": "ModelTrainingA",
+        "execution_time": 35
+      },
+      {
+        "id": "ModelTrainingB",
+        "execution_time": 28
+      },
+      {
+        "id": "ModelEvaluation",
+        "execution_time": 15
+      },
+      {
+        "id": "HyperparameterTuning",
+        "execution_time": 40
+      },
+      {
+        "id": "CrossValidation",
+        "execution_time": 25
+      },
+      {
+        "id": "EnsembleCreation",
+        "execution_time": 18
+      },
+      {
+        "id": "VisualizationPrep",
+        "execution_time": 12
+      },
+      {
+        "id": "ReportGeneration",
+        "execution_time": 10
+      },
+      {
+        "id": "MetadataEnrichment",
+        "execution_time": 8
+      },
+      {
+        "id": "StreamProcessor1",
+        "execution_time": 15
+      },
+      {
+        "id": "StreamProcessor2",
+        "execution_time": 17
+      },
+      {
+        "id": "StreamProcessor3",
+        "execution_time": 14
+      },
+      {
+        "id": "QualityAssurance",
+        "execution_time": 12
+      },
+      {
+        "id": "DeploymentPreparation",
+        "execution_time": 20
+      },
+      {
+        "id": "DocumentationGeneration",
+        "execution_time": 15
+      },
+      {
+        "id": "FinalPackaging",
+        "execution_time": 22
+      }
+    ],
+    "links": [
+      {
+        "source": "RawDataIngestion",
+        "target": "DataCleansing",
+        "data_amount": 1500
+      },
+      {
+        "source": "RawDataIngestion", 
+        "target": "PrimaryValidation",
+        "data_amount": 1500
+      },
+      {
+        "source": "DataCleansing",
+        "target": "DataNormalization",
+        "data_amount": 1350
+      },
+      {
+        "source": "PrimaryValidation",
+        "target": "SecondaryValidation",
+        "data_amount": 1100
+      },
+      {
+        "source": "DataNormalization",
+        "target": "FeatureEngineering",
+        "data_amount": 1200
+      },
+      {
+        "source": "SecondaryValidation",
+        "target": "FeatureEngineering",
+        "data_amount": 900
+      },
+      {
+        "source": "FeatureEngineering",
+        "target": "AnomalyDetection",
+        "data_amount": 950
+      },
+      {
+        "source": "FeatureEngineering",
+        "target": "ClusterAnalysis",
+        "data_amount": 950
+      },
+      {
+        "source": "FeatureEngineering",
+        "target": "DimensionalityReduction",
+        "data_amount": 950
+      },
+      {
+        "source": "FeatureEngineering",
+        "target": "MetadataEnrichment",
+        "data_amount": 500
+      },
+      {
+        "source": "AnomalyDetection",
+        "target": "ModelTrainingA",
+        "data_amount": 750
+      },
+      {
+        "source": "ClusterAnalysis",
+        "target": "ModelTrainingA",
+        "data_amount": 500
+      },
+      {
+        "source": "ClusterAnalysis",
+        "target": "ModelTrainingB",
+        "data_amount": 450
+      },
+      {
+        "source": "DimensionalityReduction",
+        "target": "ModelTrainingB",
+        "data_amount": 600
+      },
+      {
+        "source": "DimensionalityReduction",
+        "target": "StreamProcessor1",
+        "data_amount": 350
+      },
+      {
+        "source": "MetadataEnrichment",
+        "target": "VisualizationPrep",
+        "data_amount": 480
+      },
+      {
+        "source": "StreamProcessor1",
+        "target": "StreamProcessor2",
+        "data_amount": 320
+      },
+      {
+        "source": "StreamProcessor2",
+        "target": "StreamProcessor3",
+        "data_amount": 300
+      },
+      {
+        "source": "ModelTrainingA",
+        "target": "ModelEvaluation",
+        "data_amount": 300
+      },
+      {
+        "source": "ModelTrainingB",
+        "target": "ModelEvaluation",
+        "data_amount": 280
+      },
+      {
+        "source": "ModelEvaluation",
+        "target": "HyperparameterTuning",
+        "data_amount": 250
+      },
+      {
+        "source": "ModelEvaluation",
+        "target": "CrossValidation",
+        "data_amount": 530
+      },
+      {
+        "source": "HyperparameterTuning",
+        "target": "CrossValidation",
+        "data_amount": 200
+      },
+      {
+        "source": "CrossValidation",
+        "target": "EnsembleCreation",
+        "data_amount": 400
+      },
+      {
+        "source": "StreamProcessor3",
+        "target": "EnsembleCreation",
+        "data_amount": 280
+      },
+      {
+        "source": "EnsembleCreation",
+        "target": "VisualizationPrep",
+        "data_amount": 350
+      },
+      {
+        "source": "VisualizationPrep",
+        "target": "ReportGeneration",
+        "data_amount": 480
+      },
+      {
+        "source": "VisualizationPrep",
+        "target": "DocumentationGeneration",
+        "data_amount": 350
+      },
+      {
+        "source": "EnsembleCreation",
+        "target": "QualityAssurance",
+        "data_amount": 320
+      },
+      {
+        "source": "ReportGeneration",
+        "target": "DeploymentPreparation",
+        "data_amount": 420
+      },
+      {
+        "source": "DocumentationGeneration",
+        "target": "DeploymentPreparation",
+        "data_amount": 300
+      },
+      {
+        "source": "QualityAssurance",
+        "target": "DeploymentPreparation",
+        "data_amount": 280
+      },
+      {
+        "source": "DeploymentPreparation",
+        "target": "FinalPackaging",
+        "data_amount": 650
+      }
+    ]
+  }
