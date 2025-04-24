@@ -49,57 +49,57 @@
       {
         "source": "DataInput",
         "target": "PreProcess",
-        "data_amount": 1000
+        "data_amount": 100
       },
       {
         "source": "PreProcess",
         "target": "FeatureExtraction",
-        "data_amount": 800
+        "data_amount": 80
       },
       {
         "source": "PreProcess",
         "target": "DataValidation",
-        "data_amount": 800
+        "data_amount": 80
       },
       {
         "source": "FeatureExtraction",
         "target": "ModelTraining",
-        "data_amount": 500
+        "data_amount": 50
       },
       {
         "source": "FeatureExtraction",
         "target": "ParallelProcess1",
-        "data_amount": 300
+        "data_amount": 30
       },
       {
         "source": "DataValidation",
         "target": "ParallelProcess2",
-        "data_amount": 400
+        "data_amount": 40
       },
       {
         "source": "ModelTraining",
         "target": "Merge",
-        "data_amount": 200
+        "data_amount": 20
       },
       {
         "source": "ParallelProcess1",
         "target": "Merge",
-        "data_amount": 150
+        "data_amount": 15
       },
       {
         "source": "ParallelProcess2",
         "target": "Merge",
-        "data_amount": 180
+        "data_amount": 18
       },
       {
         "source": "Merge",
         "target": "FinalAnalysis",
-        "data_amount": 450
+        "data_amount": 45
       },
       {
         "source": "FinalAnalysis",
         "target": "OutputPrep",
-        "data_amount": 300
+        "data_amount": 30
       }
     ]
   }

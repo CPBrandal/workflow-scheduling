@@ -25,7 +25,7 @@ public class workflowMain {
             // Step 1: Determine which workflow file to use
             String workflowFile = getWorkflowFilePath(args);
             System.out.println("Using workflow file: " + workflowFile);
-            
+        
             // Step 2: Load the workflow JSON
             System.out.println("\nLoading workflow...");
             WorkflowJson workflowJson = WorkflowLoader.loadFromFile(workflowFile);
@@ -43,13 +43,13 @@ public class workflowMain {
             System.out.println("\nRunning Critical Path Method (CPM) analysis...");
             CpmAnalyzer cpmAnalyzer = new CpmAnalyzer(graph);
             cpmAnalyzer.calculateCriticalPath();
-            cpmAnalyzer.printAnalysisResults();
+            //cpmAnalyzer.printAnalysisResults();
 
 /*             System.out.println("\nRunning Critical Path Method (CPM) analysis with transfer time...");
             DataTransferCPM cpm = new DataTransferCPM(graph);
             cpm.calculateCriticalPath();
             cpm.printAnalysisResults(); */
-            
+            cpmAnalyzer.printDetailedAnalysisResults();
             
             // Step 5: Visualize the workflow
             System.out.println("\nDisplaying workflow visualization...");
@@ -79,7 +79,7 @@ public class workflowMain {
         }
         
         // Second priority: Default file
-        String defaultFile = "src/main/java/workflow_scheduling/exampleWorkflows/kwok_ahmad.json";
+        String defaultFile = "src/main/java/workflow_scheduling/exampleWorkflows/workflow.json";
         File file = new File(defaultFile);
         
         if (file.exists()) {

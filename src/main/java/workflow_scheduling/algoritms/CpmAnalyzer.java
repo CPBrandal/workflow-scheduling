@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.traverse.TopologicalOrderIterator;
+
 import workflow_scheduling.model.Edge;
 import workflow_scheduling.model.Node;
 import workflow_scheduling.model.WorkflowGraph;
@@ -31,7 +36,7 @@ public class CpmAnalyzer {
      */
     public void calculateCriticalPath() {
         // Topological sort
-        List<String> sortedNodes = topologicalSort();
+        List<String> sortedNodes = topologicalSort1();
         
         /*Forward pass*/
         for (String nodeId : sortedNodes) {
@@ -184,12 +189,33 @@ public class CpmAnalyzer {
             }
         }
     }
+
+    public List<String> topologicalSort1() {
+        // Create a JGraphT graph from your model
+        Graph<String, DefaultEdge> jgraph = new DefaultDirectedGraph<>(DefaultEdge.class);
+        
+        // Add vertices
+        for (String nodeId : graph.getNodes().keySet()) {
+            jgraph.addVertex(nodeId);
+        }
+        
+        // Add edges
+        for (String nodeId : graph.getNodes().keySet()) {
+            for (Edge edge : graph.getOutgoingEdges(nodeId)) {
+                jgraph.addEdge(edge.getSource(), edge.getTarget());
+            }
+        }
+        
+        // Get topological ordering
+        TopologicalOrderIterator<String, DefaultEdge> iterator = 
+            new TopologicalOrderIterator<>(jgraph);
+        
+        List<String> result = new ArrayList<>();
+        iterator.forEachRemaining(result::add);
+        return result;
+    }
     
-    /**
-     * Performs a topological sort of the graph
-     * 
-     * @return List of node IDs in topological order
-     */
+
     private List<String> topologicalSort() {
         Set<String> visited = new HashSet<>();
         Stack<String> stack = new Stack<>();
@@ -207,9 +233,7 @@ public class CpmAnalyzer {
         return result;
     }
     
-    /**
-     * Utility method for topological sort using DFS
-     */
+
     private void topologicalSortUtil(String nodeId, Set<String> visited, Stack<String> stack) {
         visited.add(nodeId);
         
@@ -265,6 +289,58 @@ public class CpmAnalyzer {
             }
             System.out.println(pathStr.toString());
             System.out.println("Total execution time: " + getEarliestCompletionTime());
+        }
+    }
+
+        /**
+     * Prints the critical path analysis results in detail
+     */
+    public void printDetailedAnalysisResults() {
+        List<String> sortedNodes = topologicalSort(); // Get nodes in topological order
+        
+        System.out.println("=== Critical Path Analysis Results ===");
+        
+        // Forward pass
+        System.out.println("\nForward pass:");
+        for (String nodeId : sortedNodes) {
+            Node node = graph.getNode(nodeId);
+            System.out.printf("%s: EST(%s) = %.1f, EFT(%s) = %.1f\n", 
+                nodeId, nodeId, node.getEarliestStart(), nodeId, node.getEarliestFinish());
+        }
+        
+        // Backward pass
+        System.out.println("\nBackward pass:");
+        for (int i = sortedNodes.size() - 1; i >= 0; i--) {
+            String nodeId = sortedNodes.get(i);
+            Node node = graph.getNode(nodeId);
+            System.out.printf("%s: LFT(%s) = %.1f, LST(%s) = %.1f\n", 
+                nodeId, nodeId, node.getLatestFinish(), nodeId, node.getLatestStart());
+        }
+        
+        // Float calculations
+        System.out.println("\nFloat calculations:");
+        for (String nodeId : sortedNodes) {
+            Node node = graph.getNode(nodeId);
+            String criticalStatus = node.isOnCriticalPath() ? "(Critical)" : "(Not Critical)";
+            System.out.printf("%s: Float(%s) = %.1f - %.1f = %.1f %s\n", 
+                nodeId, nodeId, node.getLatestStart(), node.getEarliestStart(), 
+                node.getSlack(), criticalStatus);
+        }
+        
+        // Critical path
+        List<Node> orderedPath = getOrderedCriticalPath();
+        if (!orderedPath.isEmpty()) {
+            StringBuilder pathStr = new StringBuilder();
+            for (int i = 0; i < orderedPath.size(); i++) {
+                pathStr.append(orderedPath.get(i).getId());
+                if (i < orderedPath.size() - 1) {
+                    pathStr.append(" → ");
+                }
+            }
+            System.out.printf("\nCritical path: %s, with total duration of %.1f seconds.\n", 
+                pathStr.toString(), getEarliestCompletionTime());
+        } else {
+            System.out.println("\nNo critical path found.");
         }
     }
 }

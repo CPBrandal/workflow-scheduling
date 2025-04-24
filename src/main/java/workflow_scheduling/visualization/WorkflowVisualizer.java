@@ -1,4 +1,3 @@
-// File: workflow_scheduling/visualization/WorkflowVisualizer.java
 package workflow_scheduling.visualization;
 
 import java.awt.BorderLayout;
@@ -280,7 +279,7 @@ public class WorkflowVisualizer extends JFrame {
     private String formatEdgeLabel(Edge edge) {
         StringBuilder html = new StringBuilder("<html>");
         html.append("<div style='text-align:center'>");
-        html.append("Data: ").append(edge.getDataAmount()).append("<br>");
+        html.append("").append(edge.getDataAmount()).append("<br>");
         //html.append("Time: ").append(String.format("%.1f", edge.getTransferTime()));
         html.append("</div></html>");
         return html.toString();

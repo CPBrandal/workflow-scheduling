@@ -1,0 +1,35 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "WorkflowGeneratorMain",
+            "request": "launch",
+            "mainClass": "workflow_scheduling.WorkflowGeneratorMain",
+            "projectName": "workflow"
+        },
+        {
+            "type": "java",
+            "name": "workflowMain",
+            "request": "launch",
+            "mainClass": "workflow_scheduling.workflowMain",
+            "projectName": "workflow"
+        },
+        {
+            "type": "java",
+            "name": "simpleMain",
+            "request": "launch",
+            "mainClass": "workflow_scheduling.simpleMain",
+            "projectName": "workflow"
+        },
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        }
+    ]
+}

@@ -1,0 +1,105 @@
+{
+    "directed": true,
+    "graph": {
+      "name": "ComplexDataProcessing"
+    },
+    "nodes": [
+      {
+        "id": "a",
+        "execution_time": 5
+      },
+      {
+        "id": "b",
+        "execution_time": 10
+      },
+      {
+        "id": "c",
+        "execution_time": 15
+      },
+      {
+        "id": "d",
+        "execution_time": 30
+      },
+      {
+        "id": "e",
+        "execution_time": 12
+      },
+      {
+        "id": "f",
+        "execution_time": 20
+      },
+      {
+        "id": "g",
+        "execution_time": 18
+      },
+      {
+        "id": "h",
+        "execution_time": 8
+      },
+      {
+        "id": "i",
+        "execution_time": 25
+      },
+      {
+        "id": "j",
+        "execution_time": 10
+      }
+    ],
+    "links": [
+      {
+        "source": "a",
+        "target": "b",
+        "data_amount": 100
+      },
+      {
+        "source": "b",
+        "target": "c",
+        "data_amount": 80
+      },
+      {
+        "source": "b",
+        "target": "e",
+        "data_amount": 80
+      },
+      {
+        "source": "c",
+        "target": "d",
+        "data_amount": 50
+      },
+      {
+        "source": "c",
+        "target": "f",
+        "data_amount": 30
+      },
+      {
+        "source": "e",
+        "target": "g",
+        "data_amount": 40
+      },
+      {
+        "source": "d",
+        "target": "h",
+        "data_amount": 20
+      },
+      {
+        "source": "f",
+        "target": "h",
+        "data_amount": 15
+      },
+      {
+        "source": "g",
+        "target": "h",
+        "data_amount": 18
+      },
+      {
+        "source": "h",
+        "target": "i",
+        "data_amount": 45
+      },
+      {
+        "source": "i",
+        "target": "j",
+        "data_amount": 30
+      }
+    ]
+  }
