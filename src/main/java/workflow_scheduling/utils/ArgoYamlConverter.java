@@ -23,15 +23,12 @@ public class ArgoYamlConverter {
      * @param workflow The workflow to convert
      * @param criticalPathHostname The hostname to use for critical path nodes
      * @param criticalPathNodes Optional array of node IDs that form the critical path
-     * @param parallelism Maximum number of pods that can run simultaneously in the workflow
-     *                    If less than 1, a recommended value is calculated
      * @return Argo Workflow YAML representation as a string
      */
     public static String workflowToArgoYaml(
             WorkflowJson workflow, 
             String criticalPathHostname, 
-            String[] criticalPathNodes,
-            int parallelism) {
+            String[] criticalPathNodes) {
         
         StringBuilder yaml = new StringBuilder();
         
@@ -45,16 +42,6 @@ public class ArgoYamlConverter {
         yaml.append("  name: ").append(workflowName).append("\n");
         yaml.append("spec:\n");
         yaml.append("  entrypoint: workflow-dag\n");
-        
-        // Add parallelism constraints
-        int numNodes = workflow.getNodes().length;
-        int effectiveParallelism = parallelism;
-        if (effectiveParallelism < 1) {
-            // Calculate recommended parallelism if not specified
-            effectiveParallelism = Math.max(1, numNodes / 3);
-        }
-        yaml.append("  # Limit total workflow parallelism\n");
-        yaml.append("  parallelism: ").append(effectiveParallelism).append("\n");
         
         yaml.append("  volumes:\n");
         yaml.append("  - name: workflow-data\n");
@@ -199,7 +186,6 @@ public class ArgoYamlConverter {
      * @param filePath Path or filename where the YAML file should be saved
      * @param criticalPathHostname The hostname to use for critical path nodes
      * @param criticalPathNodes Optional array of node IDs that form the critical path
-     * @param parallelism Maximum number of pods that can run simultaneously
      * @return The full path where the file was saved
      * @throws IOException If the file cannot be written
      */
@@ -207,8 +193,7 @@ public class ArgoYamlConverter {
             WorkflowJson workflow, 
             String filePath, 
             String criticalPathHostname,
-            String[] criticalPathNodes,
-            int parallelism) throws IOException {
+            String[] criticalPathNodes) throws IOException {
         
         // Get the default YAML directory
         String defaultYamlDir = WorkflowLoader.getDefaultYamlDir();
@@ -217,7 +202,7 @@ public class ArgoYamlConverter {
         String fullPath = WorkflowLoader.resolveFilePath(filePath, defaultYamlDir, ".yaml");
         
         // Generate YAML content
-        String yamlContent = workflowToArgoYaml(workflow, criticalPathHostname, criticalPathNodes, parallelism);
+        String yamlContent = workflowToArgoYaml(workflow, criticalPathHostname, criticalPathNodes);
         
         // Ensure the directory exists
         File file = new File(fullPath);
@@ -230,24 +215,5 @@ public class ArgoYamlConverter {
         Files.writeString(Paths.get(fullPath), yamlContent);
         
         return fullPath;
-    }
-    
-    /**
-     * Simplified method for saving workflow
-     * 
-     * @param workflow The workflow to save
-     * @param filePath Path or filename where the YAML file should be saved
-     * @param criticalPathHostname The hostname to use for critical path nodes
-     * @param criticalPathNodes Optional array of node IDs that form the critical path
-     * @return The full path where the file was saved
-     * @throws IOException If the file cannot be written
-     */
-    public static String saveToArgoYamlFile(
-            WorkflowJson workflow, 
-            String filePath, 
-            String criticalPathHostname,
-            String[] criticalPathNodes) throws IOException {
-        
-        return saveToArgoYamlFile(workflow, filePath, criticalPathHostname, criticalPathNodes, -1);
     }
 }

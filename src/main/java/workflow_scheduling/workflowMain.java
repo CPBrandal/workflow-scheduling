@@ -79,7 +79,7 @@ public class workflowMain {
         }
         
         // Second priority: Default file
-        String defaultFile = "src/main/java/workflow_scheduling/exampleWorkflows/workflow.json";
+        String defaultFile = "src/main/java/workflow_scheduling/exampleWorkflows/test.json";
         File file = new File(defaultFile);
         
         if (file.exists()) {

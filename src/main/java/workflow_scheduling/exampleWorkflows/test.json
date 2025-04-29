@@ -1,0 +1,112 @@
+{
+  "directed" : true,
+  "graph" : {
+    "name" : "test"
+  },
+  "nodes" : [ {
+    "id" : "Start",
+    "execution_time" : 68
+  }, {
+    "id" : "B",
+    "execution_time" : 16
+  }, {
+    "id" : "C",
+    "execution_time" : 21
+  }, {
+    "id" : "D",
+    "execution_time" : 47
+  }, {
+    "id" : "E",
+    "execution_time" : 75
+  }, {
+    "id" : "F",
+    "execution_time" : 91
+  }, {
+    "id" : "G",
+    "execution_time" : 58
+  }, {
+    "id" : "H",
+    "execution_time" : 27
+  }, {
+    "id" : "I",
+    "execution_time" : 34
+  }, {
+    "id" : "J",
+    "execution_time" : 27
+  }, {
+    "id" : "K",
+    "execution_time" : 44
+  }, {
+    "id" : "End",
+    "execution_time" : 98
+  } ],
+  "links" : [ {
+    "source" : "Start",
+    "target" : "B",
+    "data_amount" : 86
+  }, {
+    "source" : "Start",
+    "target" : "K",
+    "data_amount" : 67
+  }, {
+    "source" : "B",
+    "target" : "C",
+    "data_amount" : 23
+  }, {
+    "source" : "K",
+    "target" : "C",
+    "data_amount" : 33
+  }, {
+    "source" : "K",
+    "target" : "D",
+    "data_amount" : 31
+  }, {
+    "source" : "B",
+    "target" : "J",
+    "data_amount" : 77
+  }, {
+    "source" : "C",
+    "target" : "E",
+    "data_amount" : 71
+  }, {
+    "source" : "D",
+    "target" : "F",
+    "data_amount" : 91
+  }, {
+    "source" : "J",
+    "target" : "H",
+    "data_amount" : 96
+  }, {
+    "source" : "E",
+    "target" : "G",
+    "data_amount" : 51
+  }, {
+    "source" : "F",
+    "target" : "I",
+    "data_amount" : 59
+  }, {
+    "source" : "E",
+    "target" : "I",
+    "data_amount" : 50
+  }, {
+    "source" : "G",
+    "target" : "End",
+    "data_amount" : 96
+  }, {
+    "source" : "I",
+    "target" : "End",
+    "data_amount" : 48
+  }, {
+    "source" : "D",
+    "target" : "End",
+    "data_amount" : 25
+  }, {
+    "source" : "H",
+    "target" : "End",
+    "data_amount" : 50
+  }, {
+    "source" : "J",
+    "target" : "K",
+    "data_amount" : 50
+  } ]
+}
