@@ -114,7 +114,7 @@ public class ArgoYamlConverter {
             yaml.append("        image: ubuntu:22.04\n");
             yaml.append("        command: [\"/bin/bash\", \"-c\"]\n");
             yaml.append("        args: [\"echo 'Executing ").append(nodeId)
-                .append(" task'; sleep ").append(node.getExecutionTime()).append("\"]\n");
+                .append(" task'; sleep ").append(node.getExecutionTime() / 1000.0).append("\"]\n");
             
             yaml.append("        volumeMounts:\n");
             yaml.append("        - name: workflow-data\n");

@@ -1,0 +1,118 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  name: t8
+spec:
+  entrypoint: workflow-dag
+  volumes:
+  - name: workflow-data
+    emptyDir: {}
+  templates:
+    - name: workflow-dag
+      dag:
+        tasks:
+        - name: start
+          template: start-template
+        - name: b
+          dependencies: [start]
+          template: b-template
+        - name: c
+          dependencies: [b]
+          template: c-template
+        - name: d
+          dependencies: [c]
+          template: d-template
+        - name: e
+          dependencies: [g]
+          template: e-template
+        - name: f
+          dependencies: [e, c]
+          template: f-template
+        - name: g
+          dependencies: [start]
+          template: g-template
+        - name: end
+          dependencies: [d, f, g]
+          template: end-template
+
+    - name: start-template
+      nodeSelector:
+        kubernetes.io/hostname: wf-scheduling  # Critical path node
+      container:
+        image: ubuntu:22.04
+        command: ["/bin/bash", "-c"]
+        args: ["echo 'Executing Start task'; sleep 6.611"]
+        volumeMounts:
+        - name: workflow-data
+          mountPath: /data
+
+    - name: b-template
+      nodeSelector:
+        kubernetes.io/hostname: wf-scheduling  # Critical path node
+      container:
+        image: ubuntu:22.04
+        command: ["/bin/bash", "-c"]
+        args: ["echo 'Executing B task'; sleep 4.319"]
+        volumeMounts:
+        - name: workflow-data
+          mountPath: /data
+
+    - name: c-template
+      nodeSelector:
+        kubernetes.io/hostname: wf-scheduling  # Critical path node
+      container:
+        image: ubuntu:22.04
+        command: ["/bin/bash", "-c"]
+        args: ["echo 'Executing C task'; sleep 5.685"]
+        volumeMounts:
+        - name: workflow-data
+          mountPath: /data
+
+    - name: d-template
+      nodeSelector:
+        kubernetes.io/hostname: wf-scheduling  # Critical path node
+      container:
+        image: ubuntu:22.04
+        command: ["/bin/bash", "-c"]
+        args: ["echo 'Executing D task'; sleep 7.815"]
+        volumeMounts:
+        - name: workflow-data
+          mountPath: /data
+
+    - name: e-template
+      container:
+        image: ubuntu:22.04
+        command: ["/bin/bash", "-c"]
+        args: ["echo 'Executing E task'; sleep 5.899"]
+        volumeMounts:
+        - name: workflow-data
+          mountPath: /data
+
+    - name: f-template
+      container:
+        image: ubuntu:22.04
+        command: ["/bin/bash", "-c"]
+        args: ["echo 'Executing F task'; sleep 3.419"]
+        volumeMounts:
+        - name: workflow-data
+          mountPath: /data
+
+    - name: g-template
+      container:
+        image: ubuntu:22.04
+        command: ["/bin/bash", "-c"]
+        args: ["echo 'Executing G task'; sleep 5.234"]
+        volumeMounts:
+        - name: workflow-data
+          mountPath: /data
+
+    - name: end-template
+      nodeSelector:
+        kubernetes.io/hostname: wf-scheduling  # Critical path node
+      container:
+        image: ubuntu:22.04
+        command: ["/bin/bash", "-c"]
+        args: ["echo 'Executing End task'; sleep 1.754"]
+        volumeMounts:
+        - name: workflow-data
+          mountPath: /data

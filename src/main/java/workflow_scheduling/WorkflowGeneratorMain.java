@@ -3,6 +3,7 @@ package workflow_scheduling;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
@@ -208,7 +209,7 @@ public class WorkflowGeneratorMain {
                         
                         // Deploy to VM's Kubernetes cluster
                         try {
-                            deployToVirtualMachine(tempYamlPath, namespace);
+                            deployToVirtualMachine(tempYamlPath, namespace, name);
                         } finally {
                             // Clean up the temporary file
                             try {
@@ -242,180 +243,142 @@ public class WorkflowGeneratorMain {
         }
     }
     
- /**
- * Deploys an Argo Workflow YAML file to the remote NREC VM Kubernetes cluster
- * Using SSH config for simplified connection
- * 
- * @param yamlFilePath Path to the YAML file to deploy
- * @param namespace Kubernetes namespace to deploy to
- * @throws IOException If an error occurs executing the command
- * @throws InterruptedException If the process is interrupted
- */
-private static void deployToVirtualMachine(String yamlFilePath, String namespace) 
-throws IOException, InterruptedException {
 
+    private static void deployToVirtualMachine(String yamlFilePath, String namespace, String name)
+    throws IOException, InterruptedException {
         System.out.println("Deploying workflow to NREC VM Kubernetes cluster...");
         File yamlFile = new File(yamlFilePath);
-
         if (!yamlFile.exists()) {
-        System.err.println("Error: YAML file not found at " + yamlFilePath);
-        return;
-        }
-
-        // Generate remote filename
-        String remoteFileName = "workflow_" + System.currentTimeMillis() + ".yaml";
-
-        // Step 1: Test connection to VM using SSH config
-        System.out.println("Testing connection to VM...");
-
-        ProcessBuilder testBuilder = new ProcessBuilder(
-        "ssh", VM_HOST, "echo Connection successful");
-
-        testBuilder.redirectErrorStream(true);
-        Process testProcess = testBuilder.start();
-
-        Scanner testScanner = new Scanner(testProcess.getInputStream()).useDelimiter("\\A");
-        String testOutput = testScanner.hasNext() ? testScanner.next() : "";
-
-        int testExitCode = testProcess.waitFor();
-        if (testExitCode != 0) {
-            System.err.println("Error connecting to VM. Exit code: " + testExitCode);
-            System.err.println("Output: " + testOutput);
+            System.err.println("Error: YAML file not found at " + yamlFilePath);
             return;
         }
-
-        System.out.println("VM connection successful.");
-
-        // Step 2: Copy the YAML file to the VM using SCP with SSH config
-        System.out.println("Transferring YAML file to VM...");
-
-        ProcessBuilder scpBuilder = new ProcessBuilder(
-        "scp", yamlFilePath, VM_HOST + ":~/" + remoteFileName);
-
-        scpBuilder.redirectErrorStream(true);
-        Process scpProcess = scpBuilder.start();
-
-        Scanner scpScanner = new Scanner(scpProcess.getInputStream()).useDelimiter("\\A");
-        String scpOutput = scpScanner.hasNext() ? scpScanner.next() : "";
-
-        // Wait for the SCP command to complete with a timeout
-        boolean completed = scpProcess.waitFor(30, java.util.concurrent.TimeUnit.SECONDS);
-        if (!completed) {
-        System.err.println("SCP command timed out after 30 seconds");
-        scpProcess.destroyForcibly();
-
-        // Try alternative approach
-        transferFileAlternative(yamlFilePath, remoteFileName, namespace);
-        return; // Return after attempting alternative approach
+        
+        // Generate remote filename
+        String remoteFileName = name;
+        
+        // Create a comprehensive deployment script
+        String tempScriptPath = createDeploymentScript(yamlFilePath, remoteFileName, namespace);
+        
+        // Deployment retry mechanism
+        int maxAttempts = 5;
+        boolean deploymentSuccessful = false;
+        
+        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+            System.out.println("Deployment attempt " + attempt + " of " + maxAttempts + "...");
+            
+            Process sshProcess = null;
+            try {
+                ProcessBuilder sshBuilder = new ProcessBuilder("ssh", VM_HOST, "bash -s");
+                sshBuilder.redirectInput(new File(tempScriptPath));
+                sshBuilder.redirectErrorStream(true);
+                
+                sshProcess = sshBuilder.start();
+                
+                // Read output
+                try (Scanner sshScanner = new Scanner(sshProcess.getInputStream()).useDelimiter("\\A")) {
+                    String output = sshScanner.hasNext() ? sshScanner.next() : "";
+                    System.out.println("Output from remote server:\n" + output);
+                }
+                
+                // Wait for the process with a timeout
+                boolean completed = sshProcess.waitFor(5, java.util.concurrent.TimeUnit.MINUTES);
+                
+                if (!completed) {
+                    System.err.println("SSH session timed out after 5 minutes");
+                    sshProcess.destroyForcibly();
+                    continue;
+                }
+                
+                int exitCode = sshProcess.exitValue();
+                
+                if (exitCode == 0) {
+                    System.out.println("Workflow successfully deployed!");
+                    deploymentSuccessful = true;
+                    break;
+                } else {
+                    System.err.println("Deployment failed with exit code: " + exitCode);
+                }
+            } catch (Exception e) {
+                System.err.println("Deployment attempt " + attempt + " error: " + e.getMessage());
+            } finally {
+                // Ensure process is destroyed if it's still running
+                if (sshProcess != null) {
+                    sshProcess.destroyForcibly();
+                }
+            }
+            
+            // Wait before next attempt
+            if (attempt < maxAttempts) {
+                System.out.println("Waiting 5 seconds before next attempt...");
+                Thread.sleep(5000);
+            }
         }
-
-        int scpExitCode = scpProcess.exitValue();
-        if (scpExitCode != 0) {
-        System.err.println("Error transferring YAML file to VM. Exit code: " + scpExitCode);
-        System.err.println("Output: " + scpOutput);
-
-        // Try alternative approach
-        transferFileAlternative(yamlFilePath, remoteFileName, namespace);
-        return; // Return after attempting alternative approach
+        
+        if (!deploymentSuccessful) {
+            System.err.println("Failed to deploy workflow after " + maxAttempts + " attempts");
         }
-
-        System.out.println("YAML file transferred successfully.");
-
-        // Step 3: Apply the YAML file using kubectl on the VM
-        System.out.println("Applying the workflow with kubectl on VM...");
-
-        String kubectlCommand = "microk8s kubectl apply -f ~/" + remoteFileName + " -n " + namespace;
-
-        ProcessBuilder sshBuilder = new ProcessBuilder(
-        "ssh", VM_HOST, kubectlCommand);
-
-        sshBuilder.redirectErrorStream(true);
-        Process sshProcess = sshBuilder.start();
-
-        Scanner sshScanner = new Scanner(sshProcess.getInputStream()).useDelimiter("\\A");
-        String sshOutput = sshScanner.hasNext() ? sshScanner.next() : "";
-
-        int sshExitCode = sshProcess.waitFor();
-
-        if (sshExitCode == 0) {
-        System.out.println("Workflow successfully deployed to VM Kubernetes cluster!");
-        System.out.println("Command output: " + sshOutput);
-
-        // Step 4: Clean up the remote file
-        System.out.println("Cleaning up remote file...");
-        ProcessBuilder cleanupBuilder = new ProcessBuilder(
-            "ssh", VM_HOST, "rm -f ~/" + remoteFileName);
-
-        Process cleanupProcess = cleanupBuilder.start();
-        cleanupProcess.waitFor();
-
-        // Show workflow status
-        System.out.println("Checking workflow status...");
-        ProcessBuilder statusBuilder = new ProcessBuilder(
-            "ssh", VM_HOST, "kubectl get workflows -n " + namespace);
-
-        statusBuilder.redirectErrorStream(true);
-        Process statusProcess = statusBuilder.start();
-
-        Scanner statusScanner = new Scanner(statusProcess.getInputStream()).useDelimiter("\\A");
-        String statusOutput = statusScanner.hasNext() ? statusScanner.next() : "";
-
-        System.out.println("Workflow status: \n" + statusOutput);
-        } else {
-        System.err.println("Error deploying workflow to VM Kubernetes. Exit code: " + sshExitCode);
-        System.err.println("Command output: " + sshOutput);
+        
+        // Clean up the local temporary script
+        try {
+            Files.deleteIfExists(Paths.get(tempScriptPath));
+        } catch (IOException e) {
+            System.out.println("Could not delete temporary script: " + e.getMessage());
         }
+    }
+/**
+ * Creates a comprehensive deployment script to be executed in a single SSH session
+ * 
+ * @param yamlFilePath Local path to the YAML file
+ * @param remoteFileName Name of the file on the remote server
+ * @param namespace Kubernetes namespace
+ * @return Path to the created temporary script
+ * @throws IOException If there's an error creating the script
+ */
+private static String createDeploymentScript(String yamlFilePath, String remoteFileName, String namespace) 
+throws IOException {
+    // Read the YAML file content
+    String yamlContent = new String(Files.readAllBytes(Paths.get(yamlFilePath)));
+    
+    // Create a temporary script path
+    String tempScriptPath = System.getProperty("java.io.tmpdir") + File.separator + 
+                           "deploy_script_" + System.currentTimeMillis() + ".sh";
+    
+    // Create a script with all the operations
+    try (PrintWriter writer = new PrintWriter(tempScriptPath)) {
+        // Bash script setup for robust execution
+        writer.println("#!/bin/bash");
+        writer.println("set -e  # Exit immediately if a command exits with a non-zero status");
+        writer.println("set -o pipefail  # Fail on any component of a pipe");
+        
+        // Logging and tracing
+        writer.println("echo 'Starting deployment process...'");
+        
+        // Create the remote YAML file
+        writer.println("echo 'Creating YAML file on remote server...'");
+        writer.println("cat << 'EOF' > ~/" + remoteFileName);
+        writer.println(yamlContent);
+        writer.println("EOF");
+        
+        // Verify file creation
+        writer.println("echo 'Verifying YAML file...'");
+        writer.println("ls -l ~/" + remoteFileName);
+        
+        // Apply the workflow
+        writer.println("echo 'Applying workflow with kubectl...'");
+        writer.println("microk8s kubectl apply -f ~/" + remoteFileName + " -n " + namespace);
+        
+        // Check workflow status
+        writer.println("echo 'Current workflow status:'");
+        writer.println("microk8s kubectl get workflows -n " + namespace);
+        
+        // Clean up the file
+        writer.println("echo 'Cleaning up temporary files...'");
+        writer.println("rm -f ~/" + remoteFileName);
     }
     
-    /**
-     * Alternative approach to transfer file when SCP fails
-     */
-    private static void transferFileAlternative(String yamlFilePath, String remoteFileName, String namespace) 
-            throws IOException, InterruptedException {
-        
-        System.out.println("Using alternative file transfer approach...");
-        
-        // Read file content
-        String content = new String(Files.readAllBytes(Paths.get(yamlFilePath)));
-        
-        // Create a temporary script for the transfer
-        String scriptPath = System.getProperty("java.io.tmpdir") + File.separator + "transfer_" + System.currentTimeMillis() + ".sh";
-        
-        try (java.io.PrintWriter writer = new java.io.PrintWriter(scriptPath)) {
-            writer.println("cat << 'EOF' > ~/" + remoteFileName);
-            writer.println(content);
-            writer.println("EOF");
-            writer.println("echo 'File created successfully'");
-            writer.println("kubectl apply -f ~/" + remoteFileName + " -n " + namespace);
-            writer.println("rm -f ~/" + remoteFileName);
-        }
-        
-        System.out.println("Executing script on remote host...");
-        
-        ProcessBuilder builder = new ProcessBuilder(
-            "ssh", VM_HOST, "bash -s");
-        
-        builder.redirectInput(new File(scriptPath));
-        builder.redirectErrorStream(true);
-        
-        Process process = builder.start();
-        
-        Scanner scanner = new Scanner(process.getInputStream()).useDelimiter("\\A");
-        String output = scanner.hasNext() ? scanner.next() : "";
-        
-        int exitCode = process.waitFor();
-        
-        // Clean up the script
-        new File(scriptPath).delete();
-        
-        if (exitCode == 0) {
-            System.out.println("Workflow successfully deployed using alternative approach!");
-            System.out.println("Output: " + output);
-        } else {
-            System.err.println("Error deploying workflow. Exit code: " + exitCode);
-            System.err.println("Output: " + output);
-        }
-    }
+    return tempScriptPath;
+}
+
     
     /**
      * Analyzes and visualizes a workflow
