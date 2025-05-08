@@ -9,7 +9,7 @@
 /home/philip/Documents/workflow/src/main/java/workflow_scheduling/model/NodeInfo.java
 /home/philip/Documents/workflow/src/main/java/workflow_scheduling/model/WorkflowGraph.java
 /home/philip/Documents/workflow/src/main/java/workflow_scheduling/model/WorkflowJson.java
-/home/philip/Documents/workflow/src/main/java/workflow_scheduling/utils/SimpleYamlConverter.java
+/home/philip/Documents/workflow/src/main/java/workflow_scheduling/utils/ArgoYamlConverter.java
 /home/philip/Documents/workflow/src/main/java/workflow_scheduling/utils/WorkflowLoader.java
 /home/philip/Documents/workflow/src/main/java/workflow_scheduling/visualization/WorkflowVisualizer.java
 /home/philip/Documents/workflow/src/main/java/workflow_scheduling/workflowMain.java

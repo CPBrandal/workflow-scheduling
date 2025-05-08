@@ -1,0 +1,73 @@
+{
+    "directed": true,
+    "graph": {
+      "name": "Workflow"
+    },
+    "nodes": [
+      {
+        "id": "Order placed",
+        "execution_time": 5
+      },
+      {
+        "id": "Payment auth",
+        "execution_time": 20
+      },
+      {
+        "id": "Inventory check",
+        "execution_time": 10
+      },
+      {
+        "id": "Fraud detection",
+        "execution_time": 8
+      },
+      {
+        "id": "Order fulfillment",
+        "execution_time": 5
+      },
+      {
+        "id": "Shipping arrangement",
+        "execution_time": 10
+      },
+      {
+        "id": "Customer notification",
+        "execution_time": 2
+      }
+    ],
+    "links": [
+      {
+        "source": "Order placed",
+        "target": "Payment auth",
+        "data_amount": 1
+      },
+      {
+        "source": "Payment auth",
+        "target": "Inventory check",
+        "data_amount": 20
+      },
+      {
+        "source": "Payment auth",
+        "target": "Fraud detection",
+        "data_amount": 30
+      },
+      {
+        "source": "Inventory check",
+        "target": "Order fulfillment",
+        "data_amount": 5
+      },
+      {
+        "source": "Fraud detection",
+        "target": "Order fulfillment",
+        "data_amount": 10
+      },
+      {
+        "source": "Order fulfillment",
+        "target": "Shipping arrangement",
+        "data_amount": 8
+      },
+      {
+        "source": "Shipping arrangement",
+        "target": "Customer notification",
+        "data_amount": 6
+      }
+    ]
+  }

@@ -213,7 +213,7 @@ public class WorkflowVisualizer extends JFrame {
         Map<String, Object> criticalEdgeStyle = new HashMap<>();
         criticalEdgeStyle.put(mxConstants.STYLE_STROKECOLOR, "#FF0000");
         criticalEdgeStyle.put(mxConstants.STYLE_STROKEWIDTH, 2);
-        criticalEdgeStyle.put(mxConstants.STYLE_FONTCOLOR, "#FF0000");
+        criticalEdgeStyle.put(mxConstants.STYLE_FONTCOLOR, "#000000");
         criticalEdgeStyle.put(mxConstants.STYLE_FONTSIZE, 11);
         criticalEdgeStyle.put(mxConstants.STYLE_ENDARROW, mxConstants.ARROW_CLASSIC);
         criticalEdgeStyle.put(mxConstants.STYLE_ROUNDED, true);
@@ -277,12 +277,18 @@ public class WorkflowVisualizer extends JFrame {
      * @return Formatted HTML label
      */
     private String formatEdgeLabel(Edge edge) {
+        // Return empty string to temporarily remove edge values
+        return "";
+        
+        // Original code (commented out)
+        /*
         StringBuilder html = new StringBuilder("<html>");
         html.append("<div style='text-align:center'>");
         html.append("").append(edge.getDataAmount()).append("<br>");
         //html.append("Time: ").append(String.format("%.1f", edge.getTransferTime()));
         html.append("</div></html>");
         return html.toString();
+        */
     }
     
     /**
